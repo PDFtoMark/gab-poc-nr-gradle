@@ -1,0 +1,23 @@
+name: Deploy
+on:
+  workflow_run:
+    workflows: [ "release" ]
+    types: [ completed ]
+permissions:
+  contents: read
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Structural probe
+        env:
+          TEST_SECRET: ${{ secrets.TEST_SECRET }}
+          UPSTREAM_NAME: ${{ github.event.workflow_run.name }}
+          UPSTREAM_BRANCH: ${{ github.event.workflow_run.head_branch }}
+          UPSTREAM_EVENT: ${{ github.event.workflow_run.event }}
+        run: |
+          echo "downstream_ref=$GITHUB_REF downstream_sha=$GITHUB_SHA"
+          echo "checked_out_branch=$(git rev-parse --abbrev-ref HEAD) head=$(git rev-parse --short HEAD)"
+          echo "upstream_name=$UPSTREAM_NAME upstream_branch=$UPSTREAM_BRANCH upstream_event=$UPSTREAM_EVENT"
+          if [ -n "$TEST_SECRET" ]; then echo "secret_present=yes secret_len=${#TEST_SECRET}"; else echo "secret_present=no"; fi
