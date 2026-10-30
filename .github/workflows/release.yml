@@ -5,4 +5,5 @@ jobs:
   noop:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "upstream release run on $GITHUB_REF"
+      - run: echo "upstream release run on $GITHUB_REF (branch variant)"
+      - run: echo "attacker-controlled upstream content marker"
